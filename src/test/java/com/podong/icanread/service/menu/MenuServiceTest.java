@@ -1,5 +1,6 @@
 package com.podong.icanread.service.menu;
 
+import com.podong.icanread.app.wikipedia.WikipediaClient;
 import com.podong.icanread.domain.menu.Menu;
 import com.podong.icanread.domain.menu.MenuRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -9,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Optional;
 
@@ -23,6 +25,9 @@ public class MenuServiceTest {
     MenuRepository menuRepository;
 
     MenuService menuService;
+
+    @Autowired
+    WikipediaClient wikipediaClient;
 
     @BeforeEach
     void setup() {
@@ -49,5 +54,13 @@ public class MenuServiceTest {
 
         // 해당 Mock 이 더 이상 interactional 발생되지 않아야 한다.
         verifyNoMoreInteractions(menuRepository);
+    }
+
+    @Test
+    @DisplayName("위키피디아에서 메뉴 뜻과 이미지 잘 받아오는지 확인")
+    public void wikipediaTest() {
+        wikipediaClient = new WikipediaClient("카페라떼");
+        System.out.println(wikipediaClient.getMeaning());
+        System.out.println(wikipediaClient.getImageURL());
     }
 }
