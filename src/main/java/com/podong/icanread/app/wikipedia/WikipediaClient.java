@@ -14,8 +14,8 @@ public class WikipediaClient {
     final String BASE_URL = "https://ko.wikipedia.org/api/rest_v1/page/summary/";
     String menuName;
     String displayTitle = "";
-    String imageURL = "";
-    String meaning = "";
+    String imageURL;
+    String meaning;
 
     public WikipediaClient(String menuName){
         this.menuName = menuName;
