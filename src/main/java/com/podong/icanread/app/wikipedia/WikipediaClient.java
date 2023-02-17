@@ -35,19 +35,23 @@ public class WikipediaClient {
 
             // 제목 가져오기
             displayTitle = (String) jsonObject.get("displaytitle");
+            try{
+                // 이미지 URL 가져오기
+                JSONObject jsonObjectOriginalImage = (JSONObject) jsonObject.get("originalimage");
+                imageURL = (String) jsonObjectOriginalImage.get("source");
 
-            // 이미지 URL 가져오기
-            JSONObject jsonObjectOriginalImage = (JSONObject) jsonObject.get("originalimage");
-            imageURL = (String) jsonObjectOriginalImage.get("source");
-
-            // 동음이의어일 경우엔 어떻게 가져올지 이야기해보기
-
-            // 뜻 가져오기
-            meaning = (String) jsonObject.get("extract");
-
+                // 뜻 가져오기
+                meaning = (String) jsonObject.get("extract");
+            } catch (NullPointerException e){
+                changeNullToEmptyString(imageURL, meaning);
+            }
         } catch (IOException | ParseException e) {
             e.printStackTrace();
         }
+    }
+    private void changeNullToEmptyString(String imageURL, String meaning){
+        this.imageURL = imageURL == null ? "" : imageURL;
+        this.meaning = meaning == null ? "" : meaning;
     }
     public String getImageURL(){
         return imageURL;

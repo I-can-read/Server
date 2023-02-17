@@ -26,7 +26,7 @@ public class MenuService {
         }
     }
 
-    // 위키피디아에서 메뉴 뜻, 이미지 가져오는 메소드
+    // 위키피디아에서 받아온 메뉴 뜻, 이미지 DB에 저장하고 리턴하는 메소드
     public MenuDto searchByWikipedia(String name){
         WikipediaClient wikipediaClient = new WikipediaClient(name);
         Menu entity = Menu.builder()
@@ -34,6 +34,7 @@ public class MenuService {
                 .meaning(wikipediaClient.getMeaning())
                 .image(wikipediaClient.getImageURL())
                 .build();
+        menuRepository.save(entity);
         return new MenuDto(entity);
     }
 }
