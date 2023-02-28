@@ -59,6 +59,11 @@ public class NaverClient {
         JSONArray parseItems = (JSONArray) jsonObject.get("items");
         JSONObject firstItem = (JSONObject) parseItems.get(0);
         meaning = firstItem.get("description").toString();
+
+        if (meaning.contains("<")){ // 태그 존재할 경우 태그 제외
+            meaning = meaning.replaceAll("<(/)?([a-zA-Z]*)(\\s[a-zA-Z]*=[^>]*)?(\\s)*(/)?>", "");
+        }
+        
         imageURL = firstItem.get("thumbnail").toString();
     }
     public String getImageURL(){
