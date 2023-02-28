@@ -24,35 +24,39 @@ public class MenuService {
     @Value("${naver.secret}")
     private String naverClientSecret;
 
-    public MenuDto findByName(String name) {
+    public MenuDto findByName(String name) throws ParseException {
         Optional<Menu> entity = menuRepository.findByName(name);
         if (entity.isPresent()){ // 메뉴가 DB에 존재하는 경우
             return new MenuDto(entity.get());
         }
         else{ // 메뉴가 DB에 존재하지 않는 경우
-            return searchByWikipedia(name);
+            WikipediaClient wikipediaClient = new WikipediaClient(name);
+            if (!wikipediaClient.isCheckDataNull()){ // 1순위 Wikipedia API 사용
+                return searchByWikipedia(wikipediaClient, name);
+            }
+            else { // 2순위 Naver Encyclopedia Search API 사용
+                return searchByNaver(name);
+            }
         }
     }
 
-    // 위키피디아에서 받아온 메뉴 뜻, 이미지 DB에 저장하고 리턴하는 메소드
-    public MenuDto searchByWikipedia(String name){
-        WikipediaClient wikipediaClient = new WikipediaClient(name);
-        Menu entity = Menu.builder()
-                .name(name)
-                .meaning(wikipediaClient.getMeaning())
-                .image(wikipediaClient.getImageURL())
-                .build();
-        menuRepository.save(entity);
-        return new MenuDto(entity);
+    // Wikipedia API 연동
+    public MenuDto searchByWikipedia(WikipediaClient wikipediaClient, String name){
+        return saveData(name, wikipediaClient.getMeaning(), wikipediaClient.getImageURL());
     }
 
-    // 네이버에서 받아온 메뉴 뜻, 이미지 DB에 저장하고 리턴하는 메소드
+    // Naver Encyclopedia Search API 연동
     public MenuDto searchByNaver(String name) throws ParseException {
         NaverClient naverClient = new NaverClient(name, naverClientId, naverClientSecret);
+        return saveData(name, naverClient.getMeaning(), naverClient.getImageURL());
+    }
+
+    // DB에 메뉴 저장
+    private MenuDto saveData(String name, String meaning, String image) {
         Menu entity = Menu.builder()
                 .name(name)
-                .meaning(naverClient.getMeaning())
-                .image(naverClient.getImageURL())
+                .meaning(meaning)
+                .image(image)
                 .build();
         menuRepository.save(entity);
         return new MenuDto(entity);

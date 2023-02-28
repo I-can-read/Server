@@ -3,6 +3,7 @@ package com.podong.icanread.service.menu;
 import com.podong.icanread.app.wikipedia.WikipediaClient;
 import com.podong.icanread.domain.menu.Menu;
 import com.podong.icanread.domain.menu.MenuRepository;
+import org.json.simple.parser.ParseException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -39,7 +40,7 @@ public class MenuServiceTest {
 
     @Test
     @DisplayName("메뉴 이름으로 DB에서 메뉴 조회 가능한지 체크")
-    void mock_test() {
+    void mock_test() throws ParseException {
         Optional<Menu> menu = Optional.of(Menu.builder().name("아메리카노").meaning("에스프레소에 뜨거운 물을 더한 커피").image("https://kfcapi.inicis.com/kfcs_api_img/KFCS/goods/DL_1444725_20220704182019850.png").build());
 
         when(menuRepository.findByName(anyString())).thenReturn(menu);

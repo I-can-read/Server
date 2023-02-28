@@ -16,6 +16,7 @@ public class WikipediaClient {
     String displayTitle = "";
     String imageURL;
     String meaning;
+    boolean checkDataNull = false;
 
     public WikipediaClient(String menuName){
         this.menuName = menuName;
@@ -43,15 +44,14 @@ public class WikipediaClient {
                 // 뜻 가져오기
                 meaning = (String) jsonObject.get("extract");
             } catch (NullPointerException e){
-                changeNullToEmptyString(imageURL, meaning);
+                checkDataNull = true;
             }
         } catch (IOException | ParseException e) {
             e.printStackTrace();
         }
     }
-    private void changeNullToEmptyString(String imageURL, String meaning){
-        this.imageURL = imageURL == null ? "" : imageURL;
-        this.meaning = meaning == null ? "" : meaning;
+    public boolean isCheckDataNull(){
+        return checkDataNull;
     }
     public String getImageURL(){
         return imageURL;

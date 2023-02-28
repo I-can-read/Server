@@ -17,7 +17,7 @@ public class MenuController {
 
     // 메뉴 이름으로 메뉴 조회 테스트용 API
     @GetMapping("/api/v1/menu")
-    public MenuDto findByName(@RequestParam("name") String name){
+    public MenuDto findByName(@RequestParam("name") String name) throws ParseException {
         return menuService.findByName(name);
     }
 
