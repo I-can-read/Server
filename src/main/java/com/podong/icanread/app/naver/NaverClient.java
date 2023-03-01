@@ -25,14 +25,14 @@ public class NaverClient {
     private String clientId;
     private String clientSecret;
 
-    public NaverClient(String menuName, String clientId, String clientSecret) throws ParseException {
+    public NaverClient(String menuName, String clientId, String clientSecret) {
         this.menuName = menuName;
         this.clientId = clientId;
         this.clientSecret = clientSecret;
         naverSearchEncyclopediaResult();
     }
 
-    public void naverSearchEncyclopediaResult() throws ParseException {
+    public void naverSearchEncyclopediaResult() {
         URI uri = UriComponentsBuilder
                 .fromUriString("https://openapi.naver.com")
                 .path("/v1/search/encyc.json")
@@ -52,24 +52,34 @@ public class NaverClient {
                 .header("X-Naver-Client-Secret", clientSecret)
                 .build();
 
-        ResponseEntity<String> searchResult = restTemplate.exchange(req, String.class);
-        String data = searchResult.getBody();
-        JSONParser parser = new JSONParser();
-        JSONObject jsonObject = (JSONObject) parser.parse(data);
-        JSONArray parseItems = (JSONArray) jsonObject.get("items");
-        JSONObject firstItem = (JSONObject) parseItems.get(0);
-        meaning = firstItem.get("description").toString();
-
-        if (meaning.contains("<")){ // 태그 존재할 경우 태그 제외
-            meaning = meaning.replaceAll("<(/)?([a-zA-Z]*)(\\s[a-zA-Z]*=[^>]*)?(\\s)*(/)?>", "");
+        try{
+            ResponseEntity<String> searchResult = restTemplate.exchange(req, String.class);
+            String data = searchResult.getBody();
+            JSONParser parser = new JSONParser();
+            JSONObject jsonObject = (JSONObject) parser.parse(data);
+            try{
+                JSONArray parseItems = (JSONArray) jsonObject.get("items");
+                JSONObject firstItem = (JSONObject) parseItems.get(0);
+                meaning = firstItem.get("description").toString();
+                if (meaning.contains("<")){ // 태그 존재할 경우 태그 제외
+                    meaning = meaning.replaceAll("<(/)?([a-zA-Z]*)(\\s[a-zA-Z]*=[^>]*)?(\\s)*(/)?>", "");
+                }
+                imageURL = firstItem.get("thumbnail").toString();
+            } catch (IndexOutOfBoundsException | NullPointerException e){
+                changeNullToEmptyString(meaning, imageURL);
+            }
+        } catch (ParseException e){
+            e.printStackTrace();
         }
-        
-        imageURL = firstItem.get("thumbnail").toString();
     }
     public String getImageURL(){
         return imageURL;
     }
     public String getMeaning(){
         return meaning;
+    }
+    private void changeNullToEmptyString(String imageURL, String meaning){
+        this.imageURL = imageURL == null ? "" : imageURL;
+        this.meaning = meaning == null ? "" : meaning;
     }
 }
