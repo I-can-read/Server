@@ -43,6 +43,9 @@ public class WikipediaClient {
 
                 // 뜻 가져오기
                 meaning = (String) jsonObject.get("extract");
+                if (meaning.length() >= 255){
+                    meaning = meaning.substring(0, 250)+"...";
+                }
             } catch (NullPointerException e){
                 checkDataNull = true;
             }
