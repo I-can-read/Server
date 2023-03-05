@@ -1,16 +1,20 @@
 package com.podong.icanread.service.menu;
 
 import com.podong.icanread.app.dto.MenuDto;
+import com.podong.icanread.app.ml.MlClient;
 import com.podong.icanread.app.naver.NaverClient;
 import com.podong.icanread.app.wikipedia.WikipediaClient;
 import com.podong.icanread.domain.menu.Menu;
 import com.podong.icanread.domain.menu.MenuRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -18,13 +22,14 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class MenuService {
     private final MenuRepository menuRepository;
+    private final MlClient mlClient;
     @Value("${naver.id}")
     private String naverClientId;
 
     @Value("${naver.secret}")
     private String naverClientSecret;
 
-    public MenuDto findByName(String name) throws ParseException {
+    public MenuDto findByName(String name) {
         Optional<Menu> entity = menuRepository.findByName(name);
         if (entity.isPresent()){ // 메뉴가 DB에 존재하는 경우
             return new MenuDto(entity.get());
@@ -46,7 +51,7 @@ public class MenuService {
     }
 
     // Naver Encyclopedia Search API 연동
-    public MenuDto searchByNaver(String name) throws ParseException {
+    public MenuDto searchByNaver(String name) {
         NaverClient naverClient = new NaverClient(name, naverClientId, naverClientSecret);
         return saveData(name, naverClient.getMeaning(), naverClient.getImageURL());
     }
@@ -60,5 +65,19 @@ public class MenuService {
                 .build();
         menuRepository.save(entity);
         return new MenuDto(entity);
+    }
+
+    // ML에서 텍스트 리스트 받아오기
+    public List<MenuDto> extractedTextListFromML(MultipartFile file) throws IOException {
+        return makeMenuList(mlClient.receiveTextListFromMl(file).getTextList());
+    }
+
+    // ML에서 텍스트 리스트 받아오면 뜻풀이, 이미지 추가한 메뉴판 새로 만들기
+    public List<MenuDto> makeMenuList(ArrayList<String> data) {
+        ArrayList<MenuDto> restructuredList = new ArrayList<>();
+        for (String menuName : data){
+            restructuredList.add(findByName(menuName));
+        }
+        return restructuredList;
     }
 }

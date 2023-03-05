@@ -64,6 +64,9 @@ public class NaverClient {
                 if (meaning.contains("<")){ // 태그 존재할 경우 태그 제외
                     meaning = meaning.replaceAll("<(/)?([a-zA-Z]*)(\\s[a-zA-Z]*=[^>]*)?(\\s)*(/)?>", "");
                 }
+                if (meaning.contains("[영양성분]")){ // 영양성분일 경우 빈스트링으로 처리
+                    meaning = "";
+                }
                 imageURL = firstItem.get("thumbnail").toString();
             } catch (IndexOutOfBoundsException | NullPointerException e){
                 changeNullToEmptyString(meaning, imageURL);
