@@ -15,6 +15,8 @@ public enum ErrorCode {
     /* 401 UNAUTHORIZED : 인증되지 않은 사용자 */
 
     /* 404 NOT_FOUND : Resource 를 찾을 수 없음 */
+    NOT_FOUND_TEXT_LIST(NOT_FOUND, "ML에서 추출한 메뉴 리스트를 받아오지 못했습니다."),
+    NOT_FOUND_FILE(NOT_FOUND, "파일을 찾을 수 없습니다."),
 
     /* 409 CONFLICT : Resource 의 현재 상태와 충돌. 보통 중복된 데이터 존재 */
     DUPLICATE_RESOURCE(CONFLICT, "데이터가 이미 존재합니다"),
