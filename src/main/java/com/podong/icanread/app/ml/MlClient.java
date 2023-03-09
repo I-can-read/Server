@@ -30,7 +30,7 @@ public class MlClient {
         WebClient client = WebClient.create("http://localhost:8080"); // ML 서버 주소로 나중에 수정하기
         MultiValueMap<String, Object> formData = new LinkedMultiValueMap<>();
         formData.add("file", new MultipartInputStreamFileResource(file.getInputStream(), file.getOriginalFilename()));
-        return client.post()
+        MlResponseDto mlResponseDto = client.post()
                 .uri("/menu/extract")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData(formData))
@@ -40,6 +40,8 @@ public class MlClient {
                 .blockOptional().orElseThrow(
                         () -> new CustomException(NOT_FOUND_TEXT_LIST)
                 );
+        file.getInputStream().close();
+        return mlResponseDto;
     }
 
     // ML 서버 역할
@@ -48,6 +50,12 @@ public class MlClient {
         textList.add("아메리카노");
         textList.add("카페모카");
         textList.add("카푸치노");
+        textList.add("마카롱");
+        textList.add("햄버거");
+        textList.add("바닐라 라떼");
+        textList.add("카푸치노");
+        textList.add("캐러멜 마키아토");
+        textList.add("민트 초콜릿");
         MlResponseDto mlResponseDto = new MlResponseDto();
         mlResponseDto.setTextList(textList);
         return mlResponseDto;
@@ -58,7 +66,7 @@ public class MlClient {
 
         private final String filename;
 
-        MultipartInputStreamFileResource(InputStream inputStream, String filename) {
+        MultipartInputStreamFileResource(InputStream inputStream, String filename) throws IOException {
             super(inputStream);
             this.filename = filename;
         }
