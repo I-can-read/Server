@@ -4,6 +4,7 @@ import com.podong.icanread.app.dto.MlResponseDto;
 import com.podong.icanread.app.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -25,9 +26,12 @@ import static com.podong.icanread.app.exception.ErrorCode.NOT_FOUND_TEXT_LIST;
 @Service
 @RequiredArgsConstructor
 public class MlClient {
+    @Value("${ml.url}")
+    private String mlUrl;
+
     // ML 서버에 이미지 보내고, Text List 받아오기
     public MlResponseDto receiveTextListFromMl(@RequestParam("file") MultipartFile file) throws IOException{
-        WebClient client = WebClient.create("http://localhost:8080"); // ML 서버 주소로 나중에 수정하기
+        WebClient client = WebClient.create(mlUrl);
         MultiValueMap<String, Object> formData = new LinkedMultiValueMap<>();
         formData.add("file", new MultipartInputStreamFileResource(file.getInputStream(), file.getOriginalFilename()));
         MlResponseDto mlResponseDto = client.post()
