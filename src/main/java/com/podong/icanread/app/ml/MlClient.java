@@ -36,7 +36,7 @@ public class MlClient {
                 .body(BodyInserters.fromMultipartData(formData))
                 .retrieve()
                 .bodyToMono(MlResponseDto.class)
-                .timeout(Duration.ofMillis(1000))
+                .timeout(Duration.ofMillis(5000))
                 .blockOptional().orElseThrow(
                         () -> new CustomException(NOT_FOUND_TEXT_LIST)
                 );
