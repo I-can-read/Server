@@ -61,7 +61,7 @@ public class MenuController {
     }
 
     // ML 서버에 요청할 API 역할
-    @PostMapping("/menu/extract")
+    @PostMapping("/api/v1/menu/extract")
     public MlResponseDto checkMlServer(@RequestParam("file") MultipartFile file) {
         return mlClient.mlServer(file);
     }
