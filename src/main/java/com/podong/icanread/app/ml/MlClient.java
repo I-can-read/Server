@@ -51,15 +51,49 @@ public class MlClient {
     // ML 서버 역할
     public MlResponseDto mlServer(@RequestParam("file") MultipartFile file) {
         ArrayList<String> textList = new ArrayList<>();
+        textList.add("에스프레소");
         textList.add("아메리카노");
+        textList.add("카푸치노");
         textList.add("카페모카");
-        textList.add("카푸치노");
-        textList.add("마카롱");
-        textList.add("햄버거");
+        textList.add("화이트 카페모카");
+        textList.add("카라멜 마키아또");
+        textList.add("콜드브루");
+        textList.add("아인슈페너");
+        textList.add("아포가토");
+        textList.add("카페 라떼");
         textList.add("바닐라 라떼");
-        textList.add("카푸치노");
-        textList.add("캐러멜 마키아토");
-        textList.add("민트 초콜릿");
+        textList.add("고구마 라떼");
+
+        textList.add("그린티 라떼");
+        textList.add("초코 라떼");
+        textList.add("헤이즐넛 라떼");
+        textList.add("콜드브루 라떼");
+        textList.add("그린티");
+        textList.add("아이스티");
+        textList.add("얼그레이");
+        textList.add("캐모마일");
+        textList.add("페퍼민트");
+        textList.add("로즈마리");
+        textList.add("자스민차");
+        textList.add("유자차");
+
+        textList.add("레몬차");
+        textList.add("에이드");
+        textList.add("레몬 에이드");
+        textList.add("자몽 에이드");
+        textList.add("청포도 에이드");
+        textList.add("블루레몬 에이드");
+        textList.add("프라페");
+        textList.add("망고 스무디");
+        textList.add("딸기 스무디");
+        textList.add("블루베리 스무디");
+        textList.add("요거트 스무디");
+        textList.add("키위 스무디");
+
+        textList.add("딸기바나나 주스");
+        textList.add("키위 주스");
+        textList.add("오렌지 주스");
+        textList.add("토마토 주스");
         MlResponseDto mlResponseDto = new MlResponseDto();
         mlResponseDto.setTextList(textList);
         return mlResponseDto;
