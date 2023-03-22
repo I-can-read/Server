@@ -4,6 +4,7 @@ import com.podong.icanread.app.dto.MlResponseDto;
 import com.podong.icanread.app.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -25,18 +26,21 @@ import static com.podong.icanread.app.exception.ErrorCode.NOT_FOUND_TEXT_LIST;
 @Service
 @RequiredArgsConstructor
 public class MlClient {
+    @Value("${ml.url}")
+    private String mlUrl;
+
     // ML 서버에 이미지 보내고, Text List 받아오기
     public MlResponseDto receiveTextListFromMl(@RequestParam("file") MultipartFile file) throws IOException{
-        WebClient client = WebClient.create("http://localhost:8080"); // ML 서버 주소로 나중에 수정하기
+        WebClient client = WebClient.create(mlUrl);
         MultiValueMap<String, Object> formData = new LinkedMultiValueMap<>();
         formData.add("file", new MultipartInputStreamFileResource(file.getInputStream(), file.getOriginalFilename()));
         MlResponseDto mlResponseDto = client.post()
-                .uri("/menu/extract")
+                .uri("/api/v1/menu/extract")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData(formData))
                 .retrieve()
                 .bodyToMono(MlResponseDto.class)
-                .timeout(Duration.ofMillis(1000))
+                .timeout(Duration.ofMillis(5000))
                 .blockOptional().orElseThrow(
                         () -> new CustomException(NOT_FOUND_TEXT_LIST)
                 );
@@ -47,15 +51,49 @@ public class MlClient {
     // ML 서버 역할
     public MlResponseDto mlServer(@RequestParam("file") MultipartFile file) {
         ArrayList<String> textList = new ArrayList<>();
+        textList.add("에스프레소");
         textList.add("아메리카노");
+        textList.add("카푸치노");
         textList.add("카페모카");
-        textList.add("카푸치노");
-        textList.add("마카롱");
-        textList.add("햄버거");
+        textList.add("화이트 카페모카");
+        textList.add("카라멜 마키아또");
+        textList.add("콜드브루");
+        textList.add("아인슈페너");
+        textList.add("아포가토");
+        textList.add("카페 라떼");
         textList.add("바닐라 라떼");
-        textList.add("카푸치노");
-        textList.add("캐러멜 마키아토");
-        textList.add("민트 초콜릿");
+        textList.add("고구마 라떼");
+
+        textList.add("그린티 라떼");
+        textList.add("초코 라떼");
+        textList.add("헤이즐넛 라떼");
+        textList.add("콜드브루 라떼");
+        textList.add("그린티");
+        textList.add("아이스티");
+        textList.add("얼그레이");
+        textList.add("캐모마일");
+        textList.add("페퍼민트");
+        textList.add("로즈마리");
+        textList.add("자스민차");
+        textList.add("유자차");
+
+        textList.add("레몬차");
+        textList.add("에이드");
+        textList.add("레몬 에이드");
+        textList.add("자몽 에이드");
+        textList.add("청포도 에이드");
+        textList.add("블루레몬 에이드");
+        textList.add("프라페");
+        textList.add("망고 스무디");
+        textList.add("딸기 스무디");
+        textList.add("블루베리 스무디");
+        textList.add("요거트 스무디");
+        textList.add("키위 스무디");
+
+        textList.add("딸기바나나 주스");
+        textList.add("키위 주스");
+        textList.add("오렌지 주스");
+        textList.add("토마토 주스");
         MlResponseDto mlResponseDto = new MlResponseDto();
         mlResponseDto.setTextList(textList);
         return mlResponseDto;
