@@ -57,6 +57,7 @@ public class MlClient {
         textList.add("카페모카");
         textList.add("화이트 카페모카");
         textList.add("카라멜 마키아또");
+        textList.add("카라멜 마끼아또");
         textList.add("콜드브루");
         textList.add("아인슈페너");
         textList.add("아포가토");
@@ -68,7 +69,7 @@ public class MlClient {
         textList.add("초코 라떼");
         textList.add("헤이즐넛 라떼");
         textList.add("콜드브루 라떼");
-        textList.add("그린티");
+        textList.add("녹차");
         textList.add("아이스티");
         textList.add("얼그레이");
         textList.add("캐모마일");
@@ -94,6 +95,8 @@ public class MlClient {
         textList.add("키위 주스");
         textList.add("오렌지 주스");
         textList.add("토마토 주스");
+        textList.add("홍차");
+        textList.add("플레인 요거트 스무디");
         MlResponseDto mlResponseDto = new MlResponseDto();
         mlResponseDto.setTextList(textList);
         return mlResponseDto;

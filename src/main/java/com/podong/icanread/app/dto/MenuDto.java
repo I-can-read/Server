@@ -16,4 +16,10 @@ public class MenuDto {
         this.meaning = entity.getMeaning();
         this.image = entity.getImage();
     }
+
+    public MenuDto(String name, String meaning, String image) {
+        this.name = name;
+        this.meaning = meaning;
+        this.image = image;
+    }
 }
