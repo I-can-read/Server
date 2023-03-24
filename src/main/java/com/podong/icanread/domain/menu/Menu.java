@@ -27,7 +27,7 @@ public class Menu {
     private String meaning;
 
     // 테이블 칼럼 - 메뉴 이미지 URL
-    @Column(nullable = false)
+    @Column(nullable = false, length = 500)
     private String image;
 
     @Builder

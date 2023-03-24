@@ -30,9 +30,10 @@ public class MenuService {
     private String naverClientSecret;
 
     public MenuDto findByName(String name) {
-        Optional<Menu> entity = menuRepository.findByName(name);
+        String menuNameWithSpacesRemoved = removeSpaces(name);
+        Optional<Menu> entity = menuRepository.findByName(menuNameWithSpacesRemoved);
         if (entity.isPresent()){ // 메뉴가 DB에 존재하는 경우
-            return new MenuDto(entity.get());
+            return new MenuDto(name, entity.get().getMeaning(), entity.get().getImage());
         }
         else{ // 메뉴가 DB에 존재하지 않는 경우
             WikipediaClient wikipediaClient = new WikipediaClient(name);
@@ -58,13 +59,14 @@ public class MenuService {
 
     // DB에 메뉴 저장
     private MenuDto saveData(String name, String meaning, String image) {
+        String menuNameWithSpacesRemoved = removeSpaces(name);
         Menu entity = Menu.builder()
-                .name(name)
+                .name(menuNameWithSpacesRemoved)
                 .meaning(meaning)
                 .image(image)
                 .build();
         menuRepository.save(entity);
-        return new MenuDto(entity);
+        return new MenuDto(name, meaning, image);
     }
 
     // ML에서 텍스트 리스트 받아오기
@@ -75,9 +77,20 @@ public class MenuService {
     // ML에서 텍스트 리스트 받아오면 뜻풀이, 이미지 추가한 메뉴판 새로 만들기
     public List<MenuDto> makeMenuList(ArrayList<String> data) {
         ArrayList<MenuDto> restructuredList = new ArrayList<>();
+        final String menuPrice = "[0-9]+[.,]?[0-9]+";
         for (String menuName : data){
-            restructuredList.add(findByName(menuName));
+            String menuNameWithSpacesRemoved = removeSpaces(menuName);
+            boolean isTea = menuName.equals("홍차") || menuName.equals("녹차");
+            boolean isShortOrPrice = menuNameWithSpacesRemoved.length() < 3 || menuNameWithSpacesRemoved.matches(menuPrice);
+            if (isTea || !isShortOrPrice){ // 3글자 미만 텍스트 또는 가격일 경우 제외 (홍차, 녹차는 예외적으로 포함)
+                restructuredList.add(findByName(menuName));
+            }
         }
         return restructuredList;
+    }
+
+    // 공백 제거
+    public String removeSpaces(String name){
+        return name.replaceAll("\\s", "");
     }
 }
