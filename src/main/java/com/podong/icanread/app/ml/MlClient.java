@@ -56,7 +56,6 @@ public class MlClient {
         textList.add("카푸치노");
         textList.add("카페모카");
         textList.add("화이트 카페모카");
-        textList.add("카라멜 마키아또");
         textList.add("카라멜 마끼아또");
         textList.add("콜드브루");
         textList.add("아인슈페너");
