@@ -1,5 +1,8 @@
 package com.podong.icanread.app.ml;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.podong.icanread.app.dto.MlResponseDto;
 import com.podong.icanread.app.exception.CustomException;
 import lombok.RequiredArgsConstructor;
@@ -31,19 +34,24 @@ public class MlClient {
 
     // ML 서버에 이미지 보내고, Text List 받아오기
     public MlResponseDto receiveTextListFromMl(@RequestParam("file") MultipartFile file) throws IOException{
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);  // list deserialization 기능 활성화
         WebClient client = WebClient.create(mlUrl);
         MultiValueMap<String, Object> formData = new LinkedMultiValueMap<>();
         formData.add("file", new MultipartInputStreamFileResource(file.getInputStream(), file.getOriginalFilename()));
-        MlResponseDto mlResponseDto = client.post()
-                .uri("/api/v1/menu/extract")
+        String responseStr = client.post()
+                .uri("/api/v1/menu/extract/")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData(formData))
                 .retrieve()
-                .bodyToMono(MlResponseDto.class)
-                .timeout(Duration.ofMillis(5000))
+                .bodyToMono(String.class)
+                .timeout(Duration.ofMillis(180000))
                 .blockOptional().orElseThrow(
                         () -> new CustomException(NOT_FOUND_TEXT_LIST)
                 );
+        MlResponseDto mlResponseDto = new MlResponseDto();
+        ArrayList<String> menus = objectMapper.readValue(responseStr, new TypeReference<>(){});
+        mlResponseDto.setTextList(menus);
         file.getInputStream().close();
         return mlResponseDto;
     }
