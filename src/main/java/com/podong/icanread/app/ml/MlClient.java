@@ -40,7 +40,7 @@ public class MlClient {
         MultiValueMap<String, Object> formData = new LinkedMultiValueMap<>();
         formData.add("file", new MultipartInputStreamFileResource(file.getInputStream(), file.getOriginalFilename()));
         String responseStr = client.post()
-                .uri("/api/v1/menu/extract/")
+                .uri("/api/v1/menu/extract")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData(formData))
                 .retrieve()
