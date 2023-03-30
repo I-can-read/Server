@@ -1,5 +1,8 @@
 package com.podong.icanread.app.ml;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.podong.icanread.app.dto.MlResponseDto;
 import com.podong.icanread.app.exception.CustomException;
 import lombok.RequiredArgsConstructor;
@@ -31,19 +34,24 @@ public class MlClient {
 
     // ML 서버에 이미지 보내고, Text List 받아오기
     public MlResponseDto receiveTextListFromMl(@RequestParam("file") MultipartFile file) throws IOException{
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);  // list deserialization 기능 활성화
         WebClient client = WebClient.create(mlUrl);
         MultiValueMap<String, Object> formData = new LinkedMultiValueMap<>();
         formData.add("file", new MultipartInputStreamFileResource(file.getInputStream(), file.getOriginalFilename()));
-        MlResponseDto mlResponseDto = client.post()
-                .uri("/api/v1/menu/extract")
+        String responseStr = client.post()
+                .uri("/api/v1/menu/extract/")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData(formData))
                 .retrieve()
-                .bodyToMono(MlResponseDto.class)
-                .timeout(Duration.ofMillis(5000))
+                .bodyToMono(String.class)
+                .timeout(Duration.ofMillis(180000))
                 .blockOptional().orElseThrow(
                         () -> new CustomException(NOT_FOUND_TEXT_LIST)
                 );
+        MlResponseDto mlResponseDto = new MlResponseDto();
+        ArrayList<String> menus = objectMapper.readValue(responseStr, new TypeReference<>(){});
+        mlResponseDto.setTextList(menus);
         file.getInputStream().close();
         return mlResponseDto;
     }
@@ -56,7 +64,7 @@ public class MlClient {
         textList.add("카푸치노");
         textList.add("카페모카");
         textList.add("화이트 카페모카");
-        textList.add("카라멜 마키아또");
+        textList.add("카라멜 마끼아또");
         textList.add("콜드브루");
         textList.add("아인슈페너");
         textList.add("아포가토");
@@ -68,7 +76,7 @@ public class MlClient {
         textList.add("초코 라떼");
         textList.add("헤이즐넛 라떼");
         textList.add("콜드브루 라떼");
-        textList.add("그린티");
+        textList.add("녹차");
         textList.add("아이스티");
         textList.add("얼그레이");
         textList.add("캐모마일");
@@ -94,6 +102,8 @@ public class MlClient {
         textList.add("키위 주스");
         textList.add("오렌지 주스");
         textList.add("토마토 주스");
+        textList.add("홍차");
+        textList.add("플레인 요거트 스무디");
         MlResponseDto mlResponseDto = new MlResponseDto();
         mlResponseDto.setTextList(textList);
         return mlResponseDto;
